@@ -40,7 +40,7 @@ switch pyType
     case 'py.dict'
         matlabData = struct(pyData);
     case 'py.numpy.ndarray'
-        matlabData = pyData.tolist();
+        matlabData = pyData.T.tolist();
         matlabData = pythonConversion(matlabData);
     otherwise
         matlabData = pyData;
