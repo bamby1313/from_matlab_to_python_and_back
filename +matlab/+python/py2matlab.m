@@ -39,6 +39,9 @@ switch pyType
         end
     case 'py.dict'
         matlabData = struct(pyData);
+    case 'py.numpy.ndarray'
+        matlabData = pyData.tolist();
+        matlabData = pythonConversion(matlabData);
     otherwise
         matlabData = pyData;
 end
@@ -48,9 +51,9 @@ end
 % Loops through the Python data types and converts them into MATLAB data
 % types
 function matlabData = recursiveFunPy2Matlab(pyData)
-matlabData = pythonConversion(pyData);
-matlabType = class(matlabData);
-mynum = numel(matlabData);
+matlabData  = pythonConversion(pyData);
+matlabType  = class(matlabData);
+mynum       = numel(matlabData);
 switch matlabType
     case 'cell'
         for i = 1:mynum
