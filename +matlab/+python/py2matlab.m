@@ -40,8 +40,23 @@ switch pyType
     case 'py.dict'
         matlabData = struct(pyData);
     case 'py.numpy.ndarray'
-        matlabData = pyData.tolist;
-        matlabData = pythonConversion(matlabData);
+        pyData      = pyData.tolist;
+        matlabData  = pythonConversion(pyData);
+    case 'py.pandas.core.series.Series'
+        try 
+            dType = string(pyData.dtype.name);
+        catch
+            dType  = string(pyData.dtype.char);
+        end
+        pyData = pyData.tolist;
+        switch dType
+            case "category"
+                matlabData = categorical(string(pyData));
+            case "int64"
+                matlabData = double(pyData);
+            otherwise
+
+        end
     case 'py.NoneType'
         matlabData = nan;
     otherwise
