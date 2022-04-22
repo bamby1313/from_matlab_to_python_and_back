@@ -46,21 +46,21 @@ end
 
 % datetime
 if ~df_datetime.index.empty
-    columnNames = df_datetime.columns.tolist();
-    if isempty(string(columnNames))
-        columnNames = 'TIME';
-        varNames    = [columnNames varNames];
-    end
-    pyIndex     = df_datetime.index;
-    if isa(pyIndex, "py.pandas.core.indexes.range.RangeIndex")
-        matlabDates = py2matlab(df_datetime.to_numpy.tolist);
-    elseif isa(pyIndex, "py.pandas.core.indexes.datetimes.DatetimeIndex")
+    pyIndex = df_datetime.index;
+%     if isa(pyIndex, "py.pandas.core.indexes.range.RangeIndex")
+%         matlabDates = py2matlab(df_datetime.to_numpy.tolist);
+    if isa(pyIndex, "py.pandas.core.indexes.datetimes.DatetimeIndex")
+        columnNames = df_datetime.columns.tolist();
+        if isempty(string(columnNames))
+            columnNames = 'TIME';
+            varNames    = [columnNames varNames];
+        end
         pyIndex     = df_datetime.index.strftime('%Y-%m-%d');
         matlabDates = py2matlab(pyIndex.values.tolist);
+        matlabDates = string(matlabDates);
+        matlabData  = datetime(matlabDates(:),'InputFormat','yyyy-MM-dd');
+        t           = [t array2table(matlabData, "VariableNames", string(columnNames))];
     end
-    matlabDates = string(matlabDates);
-    matlabData  = datetime(matlabDates(:),'InputFormat','yyyy-MM-dd');
-    t           = [t array2table(matlabData, "VariableNames", string(columnNames))];
 end
 
 t = t(:, varNames);

@@ -43,7 +43,7 @@ switch pyType
         matlabData = pyData.tolist;
         matlabData = pythonConversion(matlabData);
     case 'py.NoneType'
-        matlabData = nan;
+        matlabData = nan:
     otherwise
         matlabData = pyData;
 end
