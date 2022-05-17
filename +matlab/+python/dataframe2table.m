@@ -14,6 +14,7 @@ df_logical      = df.select_dtypes(include = 'bool');
 df_datetime     = df.select_dtypes(include = 'datetime');
 
 t = table();
+
 % numeric
 if ~df_numerical.empty
     columnNames = df_numerical.columns.tolist();
@@ -45,21 +46,28 @@ if ~df_logical.empty
 end
 
 % datetime
-if ~df_datetime.index.empty
-    pyIndex = df_datetime.index;
-%     if isa(pyIndex, "py.pandas.core.indexes.range.RangeIndex")
-%         matlabDates = py2matlab(df_datetime.to_numpy.tolist);
-    if isa(pyIndex, "py.pandas.core.indexes.datetimes.DatetimeIndex")
-        columnNames = df_datetime.columns.tolist();
+if ~df_datetime.empty
+    columnNames = df_datetime.columns.tolist();
+    matlabDates = py2matlab(df_datetime.values.tolist);
+    matlabDates = string(matlabDates);
+    matlabData  = datetime(matlabDates(:),'InputFormat','yyyy-MM-dd');
+    t           = [t array2table(matlabData, "VariableNames", string(columnNames))];
+end
+
+% index
+if ~df.index.empty
+    pyIndex = df.index;
+    if isa(pyIndex, "py.pandas.core.indexes.datetimes.DatetimeIndex") 
+        columnNames = string(df.index.name);
         if isempty(string(columnNames))
-            columnNames = 'TIME';
-            varNames    = [columnNames varNames];
-        end
-        pyIndex     = df_datetime.index.strftime('%Y-%m-%d');
-        matlabDates = py2matlab(pyIndex.values.tolist);
+            columnNames = "TIME";
+        end   
+        varNames    = [columnNames varNames];
+        dt          = df.index.strftime('%Y-%m-%d %r');
+        matlabDates = py2matlab(dt.values.tolist);
         matlabDates = string(matlabDates);
-        matlabData  = datetime(matlabDates(:),'InputFormat','yyyy-MM-dd');
-        t           = [t array2table(matlabData, "VariableNames", string(columnNames))];
+        matlabData  = datetime(matlabDates(:));
+        t           = [t array2table(matlabData, "VariableNames", columnNames)];
     end
 end
 

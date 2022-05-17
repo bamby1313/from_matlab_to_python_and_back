@@ -4,8 +4,12 @@
 function pythonData = matlab2py(matlabData)
 % import pandas module
 isPandas = pyrun(["import sys", "bool = 'pandas' in sys.modules"], "bool");
+isNumpy  = pyrun(["import sys", "bool = 'numpy' in sys.modules"], "bool");
 if ~isPandas
     pyrun("import pandas");
+end
+if ~isNumpy
+    pyrun("import numpy");
 end
 
 % convert MATLAB into Python
@@ -138,7 +142,18 @@ end
                     % a 1x1 struct
                     pyData = py.dict(matlabData);
                 end
-                
+            
+            case 'missing'
+                mysize = size(matlabData);
+                if all(mysize > 1) || any(mysize > 1)
+                    dimstr  = "((" + join(string(mysize), ",") + "))";
+                    pyData  = pyrun("import numpy; pyData = numpy.empty" + dimstr, "pyData"); %#ok<NASGU> 
+                    pyData  = pyrun("pyData[:] = numpy.nan", "pyData");
+                else
+                    % a 1x1 struct
+%                     pyData = py.dict(matlabData);
+                end
+
             case 'table'
                 pyData  = matlab.python.table2dataframe(matlabData);
             
@@ -179,11 +194,8 @@ end
             case 'string'
                 matlabData = recursiveFunMatlab2Py(convertStringsToChars(matlabData));
 
-            case 'categorical'
+            case {'categorical', 'datetime'}
                 matlabData = recursiveFunMatlab2Py(convertStringsToChars(string(matlabData)));
-
-            case 'datetime'
-                matlabData = recursiveFunMatlab2Py(convertStringsToChars(string(matlabData)));                
 
         end
         pyData = matlabConversion(matlabData);

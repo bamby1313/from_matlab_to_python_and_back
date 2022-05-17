@@ -1,16 +1,16 @@
 %% Core_py2matlab
 function matlabData = py2matlab(pythonData)
 
-python.prop = vertcat(properties(pythonData));
+% python.prop = vertcat(properties(pythonData));
 
 % if isempty(python.prop)
     matlabData = recursiveFunPy2Matlab(pythonData);
 % else
 %     for p = 1 : numel(python.prop)
 % 
+%         matlabData.(python.prop{p}) = recursiveFunPy2Matlab(pData);
 %         pData = pythonData.(python.prop{p});
 %         % convert Python into MATLAB
-%         matlabData.(python.prop{p}) = recursiveFunPy2Matlab(pData);
 %         %%%
 %         % Matrices of numbers are converted into cells, so another function will
 %         % reformat these into matrices.
